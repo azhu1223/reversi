@@ -2,12 +2,12 @@ public abstract class Player
 {
     public static int currentID = 0;
 
-    private int m_color;
+    private char m_color;
     private int m_id;
     private int m_score;
     private String m_type;
 
-    public Player(int color, String type)
+    public Player(char color, String type)
     {
         m_color = color;
         m_id = currentID;
@@ -17,7 +17,7 @@ public abstract class Player
         currentID++;
     }
 
-    public int getColor() 
+    public char getColor() 
     {
         return m_color;
     }

@@ -1,6 +1,6 @@
 public class Human extends Player
 {
-    public Human(int color, String type)
+    public Human(char color, String type)
     {
         super(color, type);
     }
