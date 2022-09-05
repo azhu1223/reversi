@@ -1,5 +1,8 @@
 public class Reversi
 {
+    Player m_player1;
+    Player m_player2;
+    
     public Reversi()
     {
         
