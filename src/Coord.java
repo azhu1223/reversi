@@ -9,6 +9,12 @@ public class Coord
         m_y = y;
     }
 
+    public Coord(Coord c, Direction d)
+    {
+        m_x = c.getX() + d.getH();
+        m_y = c.getY() + d.getV();
+    }
+
     public int getX()
     {
         return m_x;

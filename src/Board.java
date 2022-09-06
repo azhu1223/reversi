@@ -13,9 +13,7 @@ public class Board
 
         m_board = new char[m_row][m_col];
 
-        for (int i = 0; i < m_row; i++)
-            for (int j = 0; j < m_col; j++)
-                m_board[i][j] = '.';
+        resetBoard();
     }
 
     public void setSquare(Coord coord, char color) 
@@ -56,6 +54,50 @@ public class Board
         m_board[row][col] = color;
     }
 
+    public void resetBoard()
+    {
+        for (int i = 0; i < m_row; i++)
+            for (int j = 0; j < m_col; j++)
+                m_board[i][j] = '.';
+
+        m_board[3][3] = 'b';
+        m_board[3][4] = 'w';
+        m_board[4][4] = 'b';
+        m_board[4][3] = 'w';
+
+        m_whiteCells = 2;
+        m_blackCells = 2;
+    }
+
+    public String toString()
+    {
+        String boardString = "";
+        String horizontalBorder = "";
+
+        for (int i = 0; i < m_col + 2; i++)
+        {
+            horizontalBorder += '-';
+        }
+
+        boardString += horizontalBorder + '\n';
+
+        for (int i = 0; i < m_row; i++)
+        {
+            boardString += '|';
+
+            for (int j = 0; j < m_col; j++)
+            {
+                boardString += m_board[i][j];
+            }
+
+            boardString += "|\n";
+        }
+
+        boardString += horizontalBorder + '\n';
+
+        return boardString;
+    }
+
     public int getNumCol()
     {
         return m_col;
@@ -74,5 +116,10 @@ public class Board
     public int getNumBlackCells()
     {
         return m_blackCells;
+    }
+
+    public char getCellContent(Coord c)
+    {
+        return m_board[c.getY()][c.getX()];
     }
 }

@@ -6,11 +6,41 @@ public class ReversiGame
     public static void main(String[] args) 
     {
         Scanner scanner = new Scanner(System.in);
-        Reversi game = new Reversi();
 
-        int difficulty = -1;
-        Player player1 = null;
         Player player2;
+
+        int difficulty = askForDifficulty(scanner);
+        Player player1 = createHumanPlayer(scanner);
+
+        System.out.println("You chose the color " + player1.getColor());
+
+        player2 = createOpponent(scanner, difficulty, player1.getColor() == 'w' ? 'b' : 'w');
+
+        boolean keepPlaying = true;
+        Reversi game = new Reversi(player1, player2);
+
+        while (keepPlaying) 
+        {
+            game.reset();
+            keepPlaying = game.play(scanner);
+        }
+
+        System.out.println(0);
+    }
+
+    private static Player createOpponent(Scanner scanner, int difficulty, char color) 
+    {
+        Player p = null;
+
+        if (difficulty == 0)
+            p = new Human(scanner, color);
+        
+        return p;
+    }
+
+    private static int askForDifficulty(Scanner scanner) 
+    {
+        int difficulty = -1;
 
         while (difficulty < 0) 
         {
@@ -29,6 +59,13 @@ public class ReversiGame
             }
         }
 
+        return difficulty;
+    }
+
+    private static Human createHumanPlayer(Scanner scanner)
+    {
+        Human player1 = null;
+
         while (player1 == null) 
         {
             System.out.println("Would Player 1 like to be white or black? w = white, b = black, r = random");
@@ -44,7 +81,7 @@ public class ReversiGame
                     answer = rand.nextInt(2) == 0 ? 'w' : 'b';
                 }
 
-                player1 = new Human(answer);
+                player1 = new Human(scanner, answer);
             }
             else 
             {
@@ -52,23 +89,6 @@ public class ReversiGame
             }
         }
 
-        System.out.println("You chose the color " + player1.getColor());
-
-        player2 = createOpponent(difficulty);
-
-        boolean keepPlaying = true;
-
-        while (keepPlaying) 
-        {
-            game.reset();
-            keepPlaying = game.play();
-        }
-
-        System.out.println(0);
+        return player1;
     }
-
-    private static Player createOpponent(int difficulty) {
-        return null;
-    }
-}
 }

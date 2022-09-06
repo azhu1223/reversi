@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public abstract class Player 
 {
     public static int currentID = 0;
@@ -6,13 +8,15 @@ public abstract class Player
     private int m_id;
     private int m_score;
     private String m_type;
+    private Scanner m_scanner;
 
-    public Player(char color, String type)
+    public Player(Scanner scanner, char color, String type)
     {
         m_color = color;
         m_id = currentID;
         m_score = 0;
         m_type = type;
+        m_scanner = scanner;
 
         currentID++;
     }
@@ -35,6 +39,11 @@ public abstract class Player
     public String getType() 
     {
         return m_type;
+    }
+
+    public Scanner getScanner()
+    {
+        return m_scanner;
     }
 
     public abstract Coord takeTurn();
