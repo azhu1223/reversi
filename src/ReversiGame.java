@@ -7,10 +7,9 @@ public class ReversiGame
     {
         Scanner scanner = new Scanner(System.in);
 
-        Player player2;
-
         int difficulty = askForDifficulty(scanner);
         Player player1 = createHumanPlayer(scanner);
+        Player player2;
 
         System.out.println("You chose the color " + player1.getColor());
 
@@ -24,6 +23,10 @@ public class ReversiGame
             game.reset();
             keepPlaying = game.play(scanner);
         }
+
+        System.out.println("Player 1 won a total of " + player1.getGameWon() + " games with a total score of " + player1.getTotalScore() + ".");
+        System.out.println("Player 2 won a total of " + player2.getGameWon() + " games with a total score of " + player2.getTotalScore() + ".");
+        System.out.println("You have played " + game.getGamesPlayed() + " games in total.");
 
         System.out.println(0);
     }

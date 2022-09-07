@@ -3,21 +3,31 @@ import java.util.Scanner;
 
 public class Reversi
 {
-    Player m_player1;
-    Player m_player2;
-    Board m_board;
+    private Player m_player1;
+    private Player m_player2;
+    private Board m_board;
+
+    private int m_gamesPlayed;
     
     public Reversi(Player p1, Player p2)
     {
         m_player1 = p1;
         m_player2 = p2;
 
+        m_gamesPlayed = 0;
+
         m_board = new Board(8, 8);
+    }
+
+    public int getGamesPlayed()
+    {
+        return m_gamesPlayed;
     }
 
     public void reset() 
     {
         m_board.resetBoard();
+        m_gamesPlayed++;
     }
 
     public boolean play(Scanner scanner) 
@@ -46,6 +56,18 @@ public class Reversi
             player1HasMoves = playerHasValidMoves(m_player1);
         }
 
+        Player winner = findWinner();
+
+        if (winner == null)
+        {
+            System.out.println("The game has resulted in a draw.");
+        }
+
+        else
+        {
+            System.out.println("Congratulations! Player " + winner.getID() + " won this game.");
+        }
+
         char keepPlaying = 'x';
 
         while (keepPlaying == 'x')
@@ -72,15 +94,15 @@ public class Reversi
     {
         ArrayList<Direction> validAdjacentSquares = new ArrayList<Direction>();
 
+        if (!m_board.isValidCoord(c) || m_board.getCellContent(c) != '.')
+        {
+            return validAdjacentSquares;
+        }
+
         char colorToCheckFor = p.getColor() == 'w' ? 'b' : 'w';
 
         int x = c.getX();
         int y = c.getY();
-
-        if (x >= m_board.getNumCol() || x < 0 || y >= m_board.getNumRow() || y < 0 )
-        {
-            return validAdjacentSquares;
-        }
 
         //t = top, m = middle, b = bottom, l = left, r = right
         Direction tl = new Direction(-1, -1);
@@ -127,7 +149,7 @@ public class Reversi
 
     private boolean checkLineInDirection(Coord c, Direction d, char colorToBePlaced)
     {
-        if (m_board.getCellContent(c) == '.')
+        if (!m_board.isValidCoord(c) || m_board.getCellContent(c) == '.')
         {
             return false;
         }
@@ -234,5 +256,58 @@ public class Reversi
         }
 
         return validMoves;
+    }
+
+    private Player findWinner()
+    {
+        Player winner;
+        char winningColor;
+        int numWinningColor;
+        int numLosingColor;
+
+        int numWhite = m_board.getNumWhiteCells();
+        int numBlack = m_board.getNumBlackCells();
+
+        if (numWhite > numBlack)
+        {
+            winningColor = 'w';
+
+            numWinningColor = numWhite;
+            numLosingColor = numBlack;
+        }
+
+        else
+        {
+            winningColor = 'b';
+
+            numWinningColor = numBlack;
+            numLosingColor = numWhite;
+        }
+
+        if (m_player1.getColor() == winningColor)
+        {
+            winner = m_player1;
+
+            m_player1.addToTotalScore(numWinningColor);
+            m_player2.addToTotalScore(numLosingColor);
+        }
+
+        else if (numWhite != numBlack)
+        {
+            winner = m_player2;
+
+            m_player1.addToTotalScore(numLosingColor);
+            m_player2.addToTotalScore(numWinningColor);
+        }
+
+        else
+        {
+            winner = null;
+
+            m_player1.addToTotalScore(numWhite);
+            m_player2.addToTotalScore(numWhite);
+        }
+
+        return winner;
     }
 }

@@ -2,11 +2,12 @@ import java.util.Scanner;
 
 public abstract class Player 
 {
-    public static int currentID = 0;
+    public static int currentID = 1;
 
     private char m_color;
     private int m_id;
-    private int m_score;
+    private int m_totalScore;
+    private int m_gamesWon;
     private String m_type;
     private Scanner m_scanner;
 
@@ -14,7 +15,8 @@ public abstract class Player
     {
         m_color = color;
         m_id = currentID;
-        m_score = 0;
+        m_totalScore = 0;
+        m_gamesWon = 0;
         m_type = type;
         m_scanner = scanner;
 
@@ -31,11 +33,6 @@ public abstract class Player
         return m_id;
     }
 
-    public int getScore() 
-    {
-        return m_score;
-    }
-
     public String getType() 
     {
         return m_type;
@@ -44,6 +41,26 @@ public abstract class Player
     public Scanner getScanner()
     {
         return m_scanner;
+    }
+
+    public int getTotalScore()
+    {
+        return m_totalScore;
+    }
+
+    public int getGameWon()
+    {
+        return m_gamesWon;
+    }
+
+    public void addToTotalScore(int score)
+    {
+        m_totalScore += score;
+    }
+
+    public void incrementGamesWon()
+    {
+        m_gamesWon++;
     }
 
     public abstract Coord takeTurn();

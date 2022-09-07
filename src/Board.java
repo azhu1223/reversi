@@ -72,25 +72,27 @@ public class Board
     public String toString()
     {
         String boardString = "";
-        String horizontalBorder = "";
+        String horizontalBorder = "- ";
 
-        for (int i = 0; i < m_col + 2; i++)
+        for (int i = 0; i < m_col; i++)
         {
-            horizontalBorder += '-';
+            horizontalBorder += i + " ";
         }
+
+        horizontalBorder += '-';
 
         boardString += horizontalBorder + '\n';
 
         for (int i = 0; i < m_row; i++)
         {
-            boardString += '|';
+            boardString += i + " ";
 
             for (int j = 0; j < m_col; j++)
             {
-                boardString += m_board[i][j];
+                boardString += m_board[i][j] + " ";
             }
 
-            boardString += "|\n";
+            boardString += i + "\n";
         }
 
         boardString += horizontalBorder + '\n';
@@ -121,5 +123,13 @@ public class Board
     public char getCellContent(Coord c)
     {
         return m_board[c.getY()][c.getX()];
+    }
+
+    public boolean isValidCoord (Coord c)
+    {
+        int x = c.getX();
+        int y= c.getY();
+
+        return x >= 0 && x < m_col && y >= 0 && y < m_row;
     }
 }
