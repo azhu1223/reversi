@@ -10,6 +10,7 @@ public abstract class Player
     private int m_gamesWon;
     private String m_type;
     private Scanner m_scanner;
+    private Reversi m_game;
 
     public Player(Scanner scanner, char color, String type)
     {
@@ -43,6 +44,11 @@ public abstract class Player
         return m_scanner;
     }
 
+    public Reversi getGame()
+    {
+        return m_game;
+    }
+
     public int getTotalScore()
     {
         return m_totalScore;
@@ -61,6 +67,11 @@ public abstract class Player
     public void incrementGamesWon()
     {
         m_gamesWon++;
+    }
+
+    public void setGame(Reversi game)
+    {
+        m_game = game;
     }
 
     public abstract Coord takeTurn();

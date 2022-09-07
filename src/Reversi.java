@@ -90,6 +90,39 @@ public class Reversi
         return keepPlaying == 'y' ? true : false;
     }
 
+    public ArrayList<Coord> getValidMoves(Player p)
+    {
+        ArrayList<Coord> validMoves = new ArrayList<>();
+
+        int rows = m_board.getNumRow();
+        int cols = m_board.getNumCol();
+
+        char color = p.getColor();
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                Coord c = new Coord(j, i);
+                ArrayList<Direction> directions = validDirections(p, c);
+
+                int directionSize = directions.size();
+
+                for (int k = 0; k < directionSize; k++)
+                {
+                    Direction d = directions.get(k);
+                    if (checkLineInDirection(new Coord(c, d), d, color))
+                    {
+                        validMoves.add(c);
+                        continue;
+                    }
+                }
+            }
+        }
+
+        return validMoves;
+    }
+
     private ArrayList<Direction> checkAdjacentSquares(Player p, Coord c)
     {
         ArrayList<Direction> validAdjacentSquares = new ArrayList<Direction>();
@@ -287,6 +320,7 @@ public class Reversi
         if (m_player1.getColor() == winningColor)
         {
             winner = m_player1;
+            m_player1.incrementGamesWon();
 
             m_player1.addToTotalScore(numWinningColor);
             m_player2.addToTotalScore(numLosingColor);
@@ -295,6 +329,7 @@ public class Reversi
         else if (numWhite != numBlack)
         {
             winner = m_player2;
+            m_player2.incrementGamesWon();
 
             m_player1.addToTotalScore(numLosingColor);
             m_player2.addToTotalScore(numWinningColor);

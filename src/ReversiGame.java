@@ -8,15 +8,26 @@ public class ReversiGame
         Scanner scanner = new Scanner(System.in);
 
         int difficulty = askForDifficulty(scanner);
-        Player player1 = createHumanPlayer(scanner);
+        Player player1;
         Player player2;
 
-        System.out.println("You chose the color " + player1.getColor());
+        if (difficulty > 3)
+        {
+            player1 = createOpponent(scanner, difficulty, 'w');
+        }
+        
+        else
+        {
+            player1 = createHumanPlayer(scanner);
+        }
 
         player2 = createOpponent(scanner, difficulty, player1.getColor() == 'w' ? 'b' : 'w');
 
         boolean keepPlaying = true;
         Reversi game = new Reversi(player1, player2);
+
+        player1.setGame(game);
+        player2.setGame(game);
 
         while (keepPlaying) 
         {
@@ -37,6 +48,21 @@ public class ReversiGame
 
         if (difficulty == 0)
             p = new Human(scanner, color);
+
+        switch(difficulty)
+        {
+            case 0:
+                p = new Human(scanner, color);
+                break;
+
+            case 4:
+            case 1:
+                p = new EasyComputer(scanner, color);
+                break;
+            
+            default:
+                break;
+        }
         
         return p;
     }
@@ -53,7 +79,7 @@ public class ReversiGame
             char answer = input.charAt(0);
             int answerDigit = answer - '0';
 
-            if (input.length() == 1 && Character.isDigit(answer) && answerDigit < 4) {
+            if (input.length() == 1 && Character.isDigit(answer) && answerDigit < 5) {
                 difficulty = answerDigit;
             }
             else 
