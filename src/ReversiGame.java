@@ -7,21 +7,56 @@ public class ReversiGame
     {
         Scanner scanner = new Scanner(System.in);
 
-        int difficulty = askForDifficulty(scanner);
+        Settings settings = parseCommandLine(args);
+
+        int difficulty = settings.getDifficulty();
+        if (difficulty < 0)
+        {
+            difficulty = askForDifficulty(scanner);
+            settings.setDifficulty(difficulty);
+        }
+
+        char player1Color = settings.getColor();
+        if (player1Color == 'x')
+        {
+            player1Color = askForColor(scanner);
+            
+            if (player1Color == 'r')
+            {
+                Random rand = new Random();
+
+                switch (rand.nextInt(2))
+                {
+                    case 0:
+                        player1Color = 'w';
+                        break;
+
+                    case 1:
+                        player1Color = 'b';
+                        break;
+                    
+                    default:
+                        break;
+                }
+            }
+
+            settings.setColor(player1Color);
+        }
+
         Player player1;
         Player player2;
 
         if (difficulty > 3)
         {
-            player1 = createOpponent(scanner, difficulty, 'w');
+            player1 = createPlayer(scanner, player1Color, 1);
         }
         
         else
         {
-            player1 = createHumanPlayer(scanner);
+            player1 = createPlayer(scanner, player1Color, 0);
         }
 
-        player2 = createOpponent(scanner, difficulty, player1.getColor() == 'w' ? 'b' : 'w');
+        player2 = createPlayer(scanner, player1.getColor() == 'w' ? 'b' : 'w', difficulty);
 
         boolean keepPlaying = true;
         Reversi game = new Reversi(player1, player2);
@@ -40,31 +75,6 @@ public class ReversiGame
         System.out.println("You have played " + game.getGamesPlayed() + " games in total.");
 
         System.out.println(0);
-    }
-
-    private static Player createOpponent(Scanner scanner, int difficulty, char color) 
-    {
-        Player p = null;
-
-        if (difficulty == 0)
-            p = new Human(scanner, color);
-
-        switch(difficulty)
-        {
-            case 0:
-                p = new Human(scanner, color);
-                break;
-
-            case 4:
-            case 1:
-                p = new EasyComputer(scanner, color);
-                break;
-            
-            default:
-                break;
-        }
-        
-        return p;
     }
 
     private static int askForDifficulty(Scanner scanner) 
@@ -91,11 +101,11 @@ public class ReversiGame
         return difficulty;
     }
 
-    private static Human createHumanPlayer(Scanner scanner)
+    private static char askForColor(Scanner scanner)
     {
-        Human player1 = null;
+        char color = 'x';
 
-        while (player1 == null) 
+        while (color == 'x') 
         {
             System.out.println("Would Player 1 like to be white or black? w = white, b = black, r = random");
 
@@ -104,13 +114,7 @@ public class ReversiGame
 
             if (input.length() == 1 && (answer == 'w' || answer == 'b' || answer == 'r')) 
             {
-                if (answer == 'r')
-                {
-                    Random rand = new Random();
-                    answer = rand.nextInt(2) == 0 ? 'w' : 'b';
-                }
-
-                player1 = new Human(scanner, answer);
+                color = answer;
             }
             else 
             {
@@ -118,6 +122,60 @@ public class ReversiGame
             }
         }
 
-        return player1;
+        return color;
+    }
+
+    private static Player createPlayer(Scanner scanner, char color, int type)
+    {
+        Player p = null;
+
+        switch (type)
+        {
+            case 0:
+                p = new Human(scanner, color);
+                break;
+
+            case 1:
+                p = new EasyComputer(scanner, color);
+                break;
+            
+            default:
+                break;
+        }
+
+        return p;
+    }
+
+    private static Settings parseCommandLine(String[] args)
+    {
+        int difficulty = -1;
+        char color = 'x';
+
+        int numArgs = args.length;
+
+        for (int i = 0; i < numArgs - 1; i++)
+        {
+            String label = args[i];
+            String arg = args[i + 1];
+            switch(label)
+            {
+                case "-d":
+                    char digit = arg.charAt(0);
+                    if (Character.isDigit(digit))
+                        difficulty = digit - '0';
+                    break;
+                
+                case "-c":
+                    char c = arg.charAt(0);
+                    if (c == 'w' | c == 'b' | c == 'r')
+                        color = c;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        return new Settings(difficulty, color);
     }
 }

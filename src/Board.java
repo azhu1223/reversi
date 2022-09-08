@@ -16,6 +16,17 @@ public class Board
         resetBoard();
     }
 
+    public Board(Board b, Coord c, char color)
+    {
+        m_board = b.m_board;
+        m_col = b.m_col;
+        m_row = b.m_row;
+        m_whiteCells = b.m_whiteCells;
+        m_blackCells = b.m_blackCells;
+
+        setSquare(c, color);
+    }
+
     public void setSquare(Coord coord, char color) 
     {
         int col = coord.getX();
