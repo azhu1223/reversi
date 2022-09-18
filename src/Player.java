@@ -12,6 +12,70 @@ public abstract class Player
     private Scanner m_scanner;
     private Reversi m_game;
 
+    public class Node 
+    {
+        private Board m_b;
+        private Coord m_firstMove;
+        private int m_value;
+        private char m_lastColor;
+
+        public Node(Board b, char color)
+        {
+            m_b = b;
+            m_firstMove = null;
+            m_lastColor = color == 'w' ? 'b' : 'w';
+        }
+
+        public Node(Board b, Coord firstMove, char color)
+        {
+            m_b = new Board(b, firstMove, color);
+            m_firstMove = firstMove;
+            m_lastColor = color;
+
+            m_value = color == 'w' ? m_b.getNumWhiteCells() : m_b.getNumBlackCells();
+        }
+
+        public Node(Node n, Coord c)
+        {
+            m_lastColor = n.getNextColor();
+            m_b = new Board(n.m_b, c, m_lastColor);
+            m_firstMove = n.m_firstMove;
+
+            m_value = m_lastColor == 'w' ? m_b.getNumWhiteCells() : m_b.getNumBlackCells();
+        }
+
+        public Node(int type)
+        {
+            m_value = type == 0 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        }
+
+        public Node(Coord firstMove, int type)
+        {
+            this(type);
+            m_firstMove = firstMove;
+        }
+
+        public Board getBoard()
+        {
+            return m_b;
+        }
+
+        public Coord getFirstMove()
+        {
+            return m_firstMove;
+        }
+
+        public int getValue()
+        {
+            return m_value;
+        }
+
+        public char getNextColor()
+        {
+            return m_lastColor == 'w' ? 'b' : 'w';
+        }
+    }
+
     public Player(Scanner scanner, char color, String type)
     {
         m_color = color;

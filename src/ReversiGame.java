@@ -10,10 +10,18 @@ public class ReversiGame
         Settings settings = parseCommandLine(args);
 
         int difficulty = settings.getDifficulty();
+        int player1Type = settings.getPlayer1();
+
         if (difficulty < 0)
         {
             difficulty = askForDifficulty(scanner);
             settings.setDifficulty(difficulty);
+        }
+
+        if (player1Type < 0)
+        {
+            player1Type = askForPlayer1(scanner);
+            settings.setPlayer1(player1Type);
         }
 
         char player1Color = settings.getColor();
@@ -43,20 +51,8 @@ public class ReversiGame
             settings.setColor(player1Color);
         }
 
-        Player player1;
-        Player player2;
-
-        if (difficulty > 3)
-        {
-            player1 = createPlayer(scanner, player1Color, 1);
-        }
-        
-        else
-        {
-            player1 = createPlayer(scanner, player1Color, 0);
-        }
-
-        player2 = createPlayer(scanner, player1.getColor() == 'w' ? 'b' : 'w', difficulty);
+        Player player1 = createPlayer(scanner, player1Color, player1Type);
+        Player player2 = createPlayer(scanner, player1.getColor() == 'w' ? 'b' : 'w', difficulty);
 
         boolean keepPlaying = true;
         Reversi game = new Reversi(player1, player2);
@@ -86,12 +82,54 @@ public class ReversiGame
             System.out.println("What difficulty would you like to play? 0 = vs Human, 1 is the easiest and 3 is the hardest.");
 
             String input = scanner.nextLine();
-            char answer = input.charAt(0);
-            int answerDigit = answer - '0';
 
-            if (input.length() == 1 && Character.isDigit(answer) && answerDigit < 5) {
-                difficulty = answerDigit;
+            if (!input.isEmpty())
+            {
+                char answer = input.charAt(0);
+                int answerDigit = answer - '0';
+
+                if (input.length() == 1 && Character.isDigit(answer) && answerDigit < 4) {
+                    difficulty = answerDigit;
+                }
+                else 
+                {
+                    System.out.println("Please input a valid response.");
+                }
             }
+
+            else 
+            {
+                System.out.println("Please input a valid response.");
+            }
+        }
+
+        return difficulty;
+    }
+
+    private static int askForPlayer1(Scanner scanner) 
+    {
+        int difficulty = -1;
+
+        while (difficulty < 0) 
+        {
+            System.out.println("What type of player do you want Player 1 to be? 0 = Human, 1 = Easy AI, 2 = Normal AI, 3 = Hard AI.");
+
+            String input = scanner.nextLine();
+
+            if (!input.isEmpty())
+            {
+                char answer = input.charAt(0);
+                int answerDigit = answer - '0';
+
+                if (input.length() == 1 && Character.isDigit(answer) && answerDigit < 4) {
+                    difficulty = answerDigit;
+                }
+                else 
+                {
+                    System.out.println("Please input a valid response.");
+                }
+            }
+
             else 
             {
                 System.out.println("Please input a valid response.");
@@ -110,12 +148,22 @@ public class ReversiGame
             System.out.println("Would Player 1 like to be white or black? w = white, b = black, r = random");
 
             String input = scanner.nextLine();
-            char answer = input.charAt(0);
 
-            if (input.length() == 1 && (answer == 'w' || answer == 'b' || answer == 'r')) 
+            if (!input.isEmpty())
             {
-                color = answer;
+                char answer = input.charAt(0);
+
+                if (input.length() == 1 && (answer == 'w' || answer == 'b' || answer == 'r')) 
+                {
+                    color = answer;
+                }
+                
+                else 
+                {
+                    System.out.println("Please input a valid response.");
+                }
             }
+
             else 
             {
                 System.out.println("Please input a valid response.");
@@ -138,6 +186,14 @@ public class ReversiGame
             case 1:
                 p = new EasyComputer(scanner, color);
                 break;
+
+            case 2:
+                p = new NormalComputer(scanner, color);
+                break;
+
+            case 3:
+                p = new HardComputer(scanner, color);
+                break;
             
             default:
                 break;
@@ -149,6 +205,7 @@ public class ReversiGame
     private static Settings parseCommandLine(String[] args)
     {
         int difficulty = -1;
+        int player1 = -1;
         char color = 'x';
 
         int numArgs = args.length;
@@ -157,18 +214,34 @@ public class ReversiGame
         {
             String label = args[i];
             String arg = args[i + 1];
+
+            char digit;
+
+            if (!arg.isEmpty())
+            {
+                digit = arg.charAt(0);
+            }
+
+            else
+            {
+                continue;
+            }
+
             switch(label)
             {
                 case "-d":
-                    char digit = arg.charAt(0);
                     if (Character.isDigit(digit))
                         difficulty = digit - '0';
                     break;
+
+                case "-p":
+                    if (Character.isDigit(digit))
+                        player1 = digit - '0';
+                    break;
                 
                 case "-c":
-                    char c = arg.charAt(0);
-                    if (c == 'w' | c == 'b' | c == 'r')
-                        color = c;
+                    if (digit == 'w' | digit == 'b' | digit == 'r')
+                        color = digit;
                     break;
 
                 default:
@@ -176,6 +249,6 @@ public class ReversiGame
             }
         }
 
-        return new Settings(difficulty, color);
+        return new Settings(difficulty, player1, color);
     }
 }

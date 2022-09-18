@@ -19,6 +19,16 @@ public class Reversi
         m_board = new Board(8, 8);
     }
 
+    public Reversi(Player p1, Player p2, Board b)
+    {
+        m_player1 = p1;
+        m_player2 = p2;
+
+        m_gamesPlayed = 0;
+
+        m_board = b;
+    }
+
     public int getGamesPlayed()
     {
         return m_gamesPlayed;
@@ -32,8 +42,8 @@ public class Reversi
 
     public boolean play(Scanner scanner) 
     {
-        boolean player1HasMoves = playerHasValidMoves(m_player1);
-        boolean player2HasMoves = playerHasValidMoves(m_player2);
+        boolean player1HasMoves = playerHasValidMoves(m_board, m_player1);
+        boolean player2HasMoves = playerHasValidMoves(m_board, m_player2);
 
         System.out.println(m_board);
 
@@ -41,19 +51,19 @@ public class Reversi
         {
             if (player1HasMoves)
             {
-                playerTurn(m_player1);
+                playerTurn(m_board, m_player1);
                 System.out.println(m_board);
             }
 
-            player2HasMoves = playerHasValidMoves(m_player2);
+            player2HasMoves = playerHasValidMoves(m_board, m_player2);
 
             if (player2HasMoves)
             {
-                playerTurn(m_player2);
+                playerTurn(m_board, m_player2);
                 System.out.println(m_board);
             }
 
-            player1HasMoves = playerHasValidMoves(m_player1);
+            player1HasMoves = playerHasValidMoves(m_board, m_player1);
         }
 
         Player winner = findWinner();
@@ -75,12 +85,22 @@ public class Reversi
             System.out.println("Would you like to replay? y = yes, n = no");
 
             String input = scanner.nextLine();
-            char answer = Character.toLowerCase(input.charAt(0));
 
-            if (answer == 'y' || answer == 'n')
+            if (!input.isEmpty())
             {
-                keepPlaying = answer;
+                char answer = Character.toLowerCase(input.charAt(0));
+
+                if (answer == 'y' || answer == 'n')
+                {
+                    keepPlaying = answer;
+                }
+
+                else
+                {
+                    System.out.println("Invalid option. Please choose a valid option");
+                }
             }
+
             else
             {
                 System.out.println("Invalid option. Please choose a valid option");
@@ -90,12 +110,12 @@ public class Reversi
         return keepPlaying == 'y' ? true : false;
     }
 
-    public ArrayList<Coord> getValidMoves(Player p)
+    public static ArrayList<Coord> getValidMoves(Board b, Player p)
     {
         ArrayList<Coord> validMoves = new ArrayList<>();
 
-        int rows = m_board.getNumRow();
-        int cols = m_board.getNumCol();
+        int rows = b.getNumRow();
+        int cols = b.getNumCol();
 
         char color = p.getColor();
 
@@ -104,14 +124,14 @@ public class Reversi
             for (int j = 0; j < cols; j++)
             {
                 Coord c = new Coord(j, i);
-                ArrayList<Direction> directions = validDirections(p, c);
+                ArrayList<Direction> directions = validDirections(b, p, c);
 
                 int directionSize = directions.size();
 
                 for (int k = 0; k < directionSize; k++)
                 {
                     Direction d = directions.get(k);
-                    if (checkLineInDirection(new Coord(c, d), d, color))
+                    if (checkLineInDirection(b, new Coord(c, d), d, color))
                     {
                         validMoves.add(c);
                         continue;
@@ -123,11 +143,16 @@ public class Reversi
         return validMoves;
     }
 
-    private ArrayList<Direction> checkAdjacentSquares(Player p, Coord c)
+    public Board getBoard()
+    {
+        return m_board;
+    }
+
+    private static ArrayList<Direction> checkAdjacentSquares(Board b, Player p, Coord c)
     {
         ArrayList<Direction> validAdjacentSquares = new ArrayList<Direction>();
 
-        if (!m_board.isValidCoord(c) || m_board.getCellContent(c) != '.')
+        if (!b.isValidCoord(c) || b.getCellContent(c) != '.')
         {
             return validAdjacentSquares;
         }
@@ -147,57 +172,57 @@ public class Reversi
         Direction bm = new Direction(0, 1);
         Direction br = new Direction(1, 1);
 
-        if (x < m_board.getNumCol() - 1)
+        if (x < b.getNumCol() - 1)
         {
-            if (m_board.getCellContent(new Coord(c, mr)) == colorToCheckFor)
+            if (b.getCellContent(new Coord(c, mr)) == colorToCheckFor)
                 validAdjacentSquares.add(mr);
 
-            if (y > 0 && m_board.getCellContent(new Coord(c, tr)) == colorToCheckFor)
+            if (y > 0 && b.getCellContent(new Coord(c, tr)) == colorToCheckFor)
                 validAdjacentSquares.add(tr);
 
-            if (y < m_board.getNumRow() - 1 && m_board.getCellContent(new Coord(c, br)) == colorToCheckFor)
+            if (y < b.getNumRow() - 1 && b.getCellContent(new Coord(c, br)) == colorToCheckFor)
                 validAdjacentSquares.add(br);
         }
 
         if (x > 0)
         {
-            if (m_board.getCellContent(new Coord(c, ml)) == colorToCheckFor)
+            if (b.getCellContent(new Coord(c, ml)) == colorToCheckFor)
                 validAdjacentSquares.add(ml);
             
-            if (y > 0 && m_board.getCellContent(new Coord(c, tl)) == colorToCheckFor)
+            if (y > 0 && b.getCellContent(new Coord(c, tl)) == colorToCheckFor)
                 validAdjacentSquares.add(tl);
 
-            if (y < m_board.getNumRow() - 1 && m_board.getCellContent(new Coord(c, bl)) == colorToCheckFor)
+            if (y < b.getNumRow() - 1 && b.getCellContent(new Coord(c, bl)) == colorToCheckFor)
                 validAdjacentSquares.add(bl);
         }
 
-        if (y > 0 && m_board.getCellContent(new Coord(c, tm)) == colorToCheckFor)
+        if (y > 0 && b.getCellContent(new Coord(c, tm)) == colorToCheckFor)
             validAdjacentSquares.add(tm);
 
-        if (y < m_board.getNumRow() - 1 && m_board.getCellContent(new Coord(c, bm)) == colorToCheckFor)
+        if (y < b.getNumRow() - 1 && b.getCellContent(new Coord(c, bm)) == colorToCheckFor)
             validAdjacentSquares.add(bm);
 
         return validAdjacentSquares;
     }
 
-    private boolean checkLineInDirection(Coord c, Direction d, char colorToBePlaced)
+    private static boolean checkLineInDirection(Board b, Coord c, Direction d, char colorToBePlaced)
     {
-        if (!m_board.isValidCoord(c) || m_board.getCellContent(c) == '.')
+        if (!b.isValidCoord(c) || b.getCellContent(c) == '.')
         {
             return false;
         }
 
-        if (m_board.getCellContent(c) == colorToBePlaced)
+        if (b.getCellContent(c) == colorToBePlaced)
         {
             return true;
         }
 
-        return checkLineInDirection(new Coord(c, d), d, colorToBePlaced);
+        return checkLineInDirection(b, new Coord(c, d), d, colorToBePlaced);
     }
 
-    private ArrayList<Direction> validDirections(Player p, Coord c)
+    private static ArrayList<Direction> validDirections(Board b, Player p, Coord c)
     {
-        ArrayList<Direction> directions = checkAdjacentSquares(p, c);
+        ArrayList<Direction> directions = checkAdjacentSquares(b, p, c);
         ArrayList<Direction> validDirections = new ArrayList<Direction>();
 
         char color = p.getColor();
@@ -207,7 +232,7 @@ public class Reversi
         {
             Direction d = directions.get(i);
 
-            if (checkLineInDirection(new Coord (c, d), d, color))
+            if (checkLineInDirection(b, new Coord (c, d), d, color))
             {
                 validDirections.add(d);
             }
@@ -216,33 +241,33 @@ public class Reversi
         return validDirections;
     }
 
-    private void flipLine(Coord c, Direction d, char colorToFlipTo)
+    private void flipLine(Board b, Coord c, Direction d, char colorToFlipTo)
     {
         Coord nextCoord = new Coord(c, d);
 
-        if (m_board.getCellContent(nextCoord) == colorToFlipTo)
+        if (b.getCellContent(nextCoord) == colorToFlipTo)
         {
             return;
         }
 
-        m_board.setSquare(nextCoord, colorToFlipTo);
-        flipLine(nextCoord, d, colorToFlipTo);
+        b.setSquare(nextCoord, colorToFlipTo);
+        flipLine(b, nextCoord, d, colorToFlipTo);
     }
 
-    private void placeColor(Player p, Coord c, ArrayList<Direction> directionsToPlaceIn)
+    private void placeColor(Board b, Player p, Coord c, ArrayList<Direction> directionsToPlaceIn)
     {
         int directionsSize = directionsToPlaceIn.size();
         char color = p.getColor();
 
-        m_board.setSquare(c, color);
+        b.setSquare(c, color);
 
         for (int i = 0; i < directionsSize; i++)
         {
-            flipLine(c, directionsToPlaceIn.get(i), color);
+            flipLine(b, c, directionsToPlaceIn.get(i), color);
         }
     }
 
-    private void playerTurn(Player p)
+    private void playerTurn(Board b, Player p)
     {
         Coord coordToChange = null;
         ArrayList<Direction> directions = null;
@@ -254,7 +279,7 @@ public class Reversi
             System.out.println("Player " + playerID + "'s turn");
 
             Coord c = p.takeTurn();
-            directions = validDirections(p, c);
+            directions = validDirections(b, p, c);
 
             if (directions.isEmpty())
             {
@@ -266,14 +291,14 @@ public class Reversi
             }
         }
 
-        placeColor(p, coordToChange, directions);
+        placeColor(b, p, coordToChange, directions);
     }
 
-    private boolean playerHasValidMoves(Player p)
+    private boolean playerHasValidMoves(Board b, Player p)
     {
         boolean validMoves = false;
-        int rows = m_board.getNumRow();
-        int cols = m_board.getNumRow();
+        int rows = b.getNumRow();
+        int cols = b.getNumRow();
 
         for (int i = 0; i < rows && !validMoves; i++)
         {
@@ -281,7 +306,7 @@ public class Reversi
             {
                 Coord c = new Coord(j, i);
 
-                if (!validDirections(p, c).isEmpty())
+                if (!validDirections(b, p, c).isEmpty())
                 {
                     validMoves = true;
                 }

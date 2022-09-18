@@ -16,13 +16,55 @@ public class Board
         resetBoard();
     }
 
-    public Board(Board b, Coord c, char color)
+    public Board(Board b)
     {
-        m_board = b.m_board;
         m_col = b.m_col;
         m_row = b.m_row;
+
+        m_board = new char[m_row][m_col];
+
+        for (int i = 0; i < m_row; i++) 
+        {
+            for (int j = 0; j < m_col; j++)
+            {
+                m_board[i][j] = b.m_board[i][j];
+            }
+        }
+
         m_whiteCells = b.m_whiteCells;
         m_blackCells = b.m_blackCells;
+    }
+
+    public Board(char[][] board)
+    {
+        m_col = board[0].length;
+        m_row = board.length;
+
+        m_board = board;
+
+        m_whiteCells = 0;
+        m_blackCells = 0;
+
+        for (int i = 0; i < m_row; i++) 
+        {
+            for (int j = 0; j < m_col; j++)
+            {
+                if (board[i][j] == 'w')
+                {
+                    m_whiteCells++;
+                }
+
+                else if (board[i][j] == 'b')
+                {
+                    m_blackCells++;
+                }
+            }
+        }
+    }
+
+    public Board(Board b, Coord c, char color)
+    {
+        this(b);
 
         setSquare(c, color);
     }

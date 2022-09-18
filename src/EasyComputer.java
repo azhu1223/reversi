@@ -14,7 +14,7 @@ public class EasyComputer extends Player
     {
         Random rand = new Random();
 
-        ArrayList<Coord> possibleMoves = getGame().getValidMoves(this);
+        ArrayList<Coord> possibleMoves = Reversi.getValidMoves(getGame().getBoard(), this);
 
         return possibleMoves.get(rand.nextInt(possibleMoves.size()));
     }
